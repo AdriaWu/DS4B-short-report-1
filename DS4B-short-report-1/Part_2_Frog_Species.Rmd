@@ -17,3 +17,24 @@ output:
 # Location on GitHub
 
 https://github.com/AdriaWu/DS4B-short-report-1//blob/main/DS4B-short-report-1/Part_2_Frog_Species.Rmd
+
+## 1. Loading the data and preparing for the packages
+
+```{r}
+# Load necessary R packages
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(lubridate)
+
+# Read data from Excel file
+data_2 <- read_csv("raw_data/FrogID4_final_dataset.csv")
+
+# have a quick view of the data
+tibble(data_2)
+
+# Check the type of value
+summary(data_2)
+```
+
