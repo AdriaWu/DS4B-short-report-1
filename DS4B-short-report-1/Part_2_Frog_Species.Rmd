@@ -52,3 +52,70 @@ This means that all the rows in these columns have valid data, and there is no s
 sum(duplicated(data_2))
 ```
 So there are no duplicate rows in the data_2.
+
+```{r}
+# Provide a summary of the dataset
+
+# Number of unique species
+unique_species <- length(unique(data_2$scientificName))
+
+# Range of dates
+date_range <- range(as.Date(data_2$eventDate, format="%Y/%m/%d"))
+
+# Distribution of recordings across states
+state_distribution <- table(data_2$stateProvince)
+
+# Print the summary
+cat("Summary of the Dataset:\n")
+cat("-----------------------\n")
+cat("Number of Unique Species Recorded:", unique_species, "\n")
+cat("Range of Dates: From", date_range[1], "to", date_range[2], "\n")
+cat("Distribution of Recordings Across States:\n")
+print(state_distribution)
+```
+
+## 3. Plot the species discovery curve for Australia
+
+```{r}
+# Convert the eventDate column to date format
+data_2$eventDate <- as.Date(data_2$eventDate, format="%Y/%m/%d")
+
+# Sort the data by date
+data_sorted <- data_2 %>%
+  arrange(eventDate) %>%
+  group_by(eventDate) %>%
+  summarise(unique_species = n_distinct(scientificName)) %>%
+  mutate(cumulative_species = cumsum(unique_species))
+
+# Use ggplot2 to plot the species discovery curve for Australia as whole
+plot_1 <- ggplot(data_sorted, aes(x = eventDate, y = cumulative_species)) +
+  geom_line(color = "blue") +
+  labs(title = "Species Discovery Curve for Australia",
+       x = "Date",
+       y = "Cumulative Number of Species Discovered") +
+  theme_minimal()
+
+print(plot_1)
+
+```
+```{r}
+# Sort and group data by date and state
+data_sorted_statewise <- data_2 |>
+  arrange(eventDate) |>
+  group_by(eventDate, stateProvince) |>
+  summarise(unique_species = n_distinct(scientificName), .groups = "drop") |>
+  group_by(stateProvince) |>
+  mutate(cumulative_species = cumsum(unique_species))
+
+# Use ggplot2 to plot the species discovery curve for each state
+plot_2 <- ggplot(data_sorted_statewise, aes(x = eventDate, y = cumulative_species, color = stateProvince)) +
+  geom_line() +
+  labs(title = "Species Discovery Curve by State",
+       x = "Date",
+       y = "Cumulative Number of Species Discovered") +
+  theme_minimal() 
+  
+print(plot_2)
+```
+
+
