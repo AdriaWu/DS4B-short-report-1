@@ -38,3 +38,17 @@ tibble(data_2)
 summary(data_2)
 ```
 
+## 2. Data Cleaning and Preliminary Analysis
+
+```{r}
+# Check for missing values and use the `summarise_all()` to summarize or calculate all columns in a data frame
+data_2 |>
+  summarise_all(~sum(is.na(.)))
+```
+This means that all the rows in these columns have valid data, and there is no shortage.
+
+```{r}
+# Check for Duplicates and use the `duplicated()` function to identify and count duplicate rows.
+sum(duplicated(data_2))
+```
+So there are no duplicate rows in the data_2.
