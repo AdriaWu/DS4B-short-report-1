@@ -45,8 +45,9 @@ summary(data_1)
 data_1 <- data_1 |>
   slice(-1)
 
-# Transform the Extent column to numbers
+# Transform some columns to numbers in order to calculate or plot
 data_1$Extent <- as.numeric(as.character(data_1$Extent))
+data_1$Year <- as.numeric(as.character(data_1$Year))
 
 # Check the tidy_data
 tibble(data_1)
@@ -88,16 +89,18 @@ Year_df <- winter_data |>
     .groups = "drop"
   )
 
-# 合并数据框
-# 合并Jun_df和July_df
+# Merge the data frames
+
+# Merge Jun_df and July_df
 merged_df <- left_join(Jun_df, July_df, by = "Year")
 
-# 合并merged_df和Aug_df
+# Merge merged_df and Aug_df
 merged_df <- left_join(merged_df, Aug_df, by = "Year")
 
-# 合并merged_df和Year_df
+# Merge merged_df and Year_df
 final_df <- left_join(merged_df, Year_df, by = "Year")
 
+# Check the results
 print(Jun_df)
 print(July_df)
 print(Aug_df)
@@ -105,100 +108,31 @@ print(Year_df)
 print(final_df)
 
 ```
-```{r}
 
-```
-
+# 4. Use ggplot to plot the time series
 
 ```{r}
-plot_1 <- ggplot(tidy_data, aes(x = Date, y = Extent)) +
-  
+plot_1 <- ggplot(final_df, aes(x = Year)) +
+  geom_line(aes(y = Mean_Jun_Extent, color = "Mean_Jun_Extent")) +
+  geom_line(aes(y = Mean_July_Extent, color = "Mean_July_Extent")) +
+  geom_line(aes(y = Mean_Aug_Extent, color = "Mean_Aug_Extent")) +
+  geom_line(aes(y = Min_Winter_Extent, color = "Min_Winter_Extent"), linetype = "dashed") +
+  geom_line(aes(y = Mean_Winter_Extent, color = "Mean_Winter_Extent"), linetype = "dashed") +
+  labs(y = "Extent", color = "Legend") +
+  scale_x_continuous(breaks = seq(min(final_df$Year), max(final_df$Year), by = 2)) +
+  # Rotate x-axis label 90 degrees
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme_minimal() 
+
+plot_1
 ```
 
 
-# 5. 使用ggplot绘制时间序列图
-plot <- ggplot(tidy_data, aes(x = Date, y = Extent)) +
-  geom_line(aes(color = ifelse(Date %in% winter_2023$Date, "Winter 2023", "Other years")), linewidth = 1) +
-  geom_hline(yintercept = mean(data_1$Extent, na.rm = TRUE), linetype = "dashed", color = "red", linewidth = 1) +
-  annotate("text", x = min(data_1$Date), y = mean(data$Extent, na.rm = TRUE), label = "Average Extent", vjust = -1) +
-  labs(title = "过去几年的南极海冰范围",
-       x = "Year",
-       y = "Extent (10^6 sq km)",
-       color = "Year") +
-  theme_test() +
-  theme(legend.position = "bottom",
-        text = element_text(size = 14),
-        plot.title = element_text(hjust = 0.5, size = 20)) +
-  scale_color_manual(values = c("Winter 2023" = "blue", "Other years" = "grey50"))
-
-print(plot)
-
-```
-
-```{r}
-# 选择近5年的数据
-recent_data <- data %>%
-  filter(Year >= 2018)
-
-# 绘制图表
-plot <- ggplot(recent_data, aes(x = Date, y = Extent)) +
-  geom_smooth(aes(color = ifelse(Date %in% winter_2023$Date, "Winter 2023", "Other years")), se = FALSE) +
-  geom_hline(yintercept = mean(recent_data$Extent, na.rm = TRUE), linetype = "dashed", color = "red", size = 1) +
-  annotate("text", x = min(recent_data$Date), y = mean(recent_data$Extent, na.rm = TRUE) + 0.5, label = "Average Extent", vjust = -1) +
-  labs(title = "过去几年的南极海冰范围",
-       x = "Year",
-       y = "Extent (10^6 sq km)",
-       color = "Year") +
-  theme_test() +
-  theme(legend.position = "bottom",
-        text = element_text(size = 14),
-        plot.title = element_text(hjust = 0.5, size = 20)) +
-  scale_color_manual(values = c("Winter 2023" = "blue", "Other years" = "grey50"))
-
-# 显示图形
-plot
-
-```
 
 
-```{r}
-# 加载必要的库
-library(ggplot2)
-library(dplyr)
-library(readxl)
 
-# 创建日期列
-data$DateString <- sprintf("%04d-%02d-%02d", as.numeric(data$Year), as.numeric(data$Month), as.numeric(data$Day))
 
-# 过滤掉问题日期
-data <- data[data$DateString != "NA-NA-NA", ]
 
-# 再次尝试创建日期列
-data$Date <- as.Date(data$DateString, format="%Y-%m-%d")
-
-# 按年和月分组并计算每月的平均海冰范围
-monthly_avg <- data %>%
-  group_by(Year, Month) %>%
-  summarise(AvgExtent = mean(Extent, na.rm = TRUE))
-
-# 绘制时间序列图
-plot <- ggplot(monthly_avg, aes(x = as.Date(paste0(Year, "-", sprintf("%02d", Month), "-01")), y = AvgExtent)) +
-  geom_line(aes(color = ifelse(Year == 2023 & Month %in% c(6, 7, 8), "Winter 2023", "Other years")), size = 1) +
-  geom_hline(yintercept = mean(monthly_avg$AvgExtent, na.rm = TRUE), linetype = "dashed", color = "red", size = 1) +
-  annotate("text", x = min(monthly_avg$Date), y = mean(monthly_avg$AvgExtent, na.rm = TRUE) + 0.5, label = "Average Extent", vjust = -1) +
-  labs(title = "过去几年的南极海冰范围",
-       x = "Year",
-       y = "Extent (10^6 sq km)",
-       color = "Year") +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(size = 14),
-        plot.title = element_text(hjust = 0.5, size = 20)) +
-  scale_color_manual(values = c("Winter 2023" = "blue", "Other years" = "grey50"))
-
-plot
-
-```
 
 
 
