@@ -51,8 +51,8 @@ data_1$Extent <- as.numeric(as.character(data_1$Extent))
 # Check the tidy_data
 tibble(data_1)
 ```
-以年或月为单位求Extent的最低值和平均值
 
+# 3. Filter data and evaluate by year or month
 
 ```{r}
 # Filter out the data for winter
