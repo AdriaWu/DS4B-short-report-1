@@ -112,22 +112,46 @@ print(final_df)
 # 4. Use ggplot to plot the time series
 
 ```{r}
+# Emphasize the data for 2023 using points with different shape
 plot_1 <- ggplot(final_df, aes(x = Year)) +
   geom_line(aes(y = Mean_Jun_Extent, color = "Mean_Jun_Extent")) +
+  geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_Jun_Extent), color = "green", size = 3, shape = 16) +
+  
   geom_line(aes(y = Mean_July_Extent, color = "Mean_July_Extent")) +
+  geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_July_Extent), color = "grey", size = 3, shape = 16) +
+  
   geom_line(aes(y = Mean_Aug_Extent, color = "Mean_Aug_Extent")) +
+  geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_Aug_Extent), color = "red", size = 3, shape = 16) +
+  
   geom_line(aes(y = Min_Winter_Extent, color = "Min_Winter_Extent"), linetype = "dashed") +
+  geom_point(data = subset(final_df, Year == 2023), aes(y = Min_Winter_Extent), color = "purple", size = 3, shape = 18) +
+  
   geom_line(aes(y = Mean_Winter_Extent, color = "Mean_Winter_Extent"), linetype = "dashed") +
-  labs(y = "Extent", color = "Legend") +
+  geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_Winter_Extent), color = "blue", size = 3, shape = 18) +
+  
+  labs(title = "Antarctic Sea Ice Extent Over the Years",
+       subtitle = "Highlighting Winter 2023",
+       y = "Extent (10^6 sq km)",
+       color = "Legend") +
   scale_x_continuous(breaks = seq(min(final_df$Year), max(final_df$Year), by = 2)) +
-  # Rotate x-axis label 90 degrees
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  theme_minimal() 
+  theme_minimal() +
+  # Rotate x-axis label 90 degrees and center the title and subtitle
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        plot.title = element_text(hjust = 0.5, size = 16),
+        plot.subtitle = element_text(hjust = 0.5, size = 14))
 
 plot_1
 ```
 
+# 5. Summary the data and plot
 
+As we journey through the visual representation of Antarctic sea ice extent over the years, a few patterns emerge. Starting from the late 1970s, we observe fluctuations in the extent of sea ice during the winter months of June, July, and August. The solid lines represent the mean extent for each of these months, while the dashed lines depict the minimum and mean extent observed during the entire winter season.
+
+The 1980s saw a relatively stable pattern, with minor dips and rises. Moving into the 1990s, there's a noticeable increase in the extent, especially in the mid-90s. The early 2000s brought about a period of higher variability, with some years, like 2007 and 2016, showing significant drops.
+
+However, what stands out most prominently is the data for the recent years. The year 2023, in particular, showcases a sharp decline in the extent of sea ice, reaching its lowest in the recorded history. This decline is not just a one-off event but seems to be part of a trend observed since 2019.
+
+Such patterns raise crucial questions about the changing climate and its impact on Antarctic sea ice. While the reasons for these changes can be multifaceted, the visualization underscores the importance of continuous monitoring and research in understanding our planet's evolving climate dynamics.
 
 
 
