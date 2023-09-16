@@ -36,9 +36,9 @@ tibble(data_1)
 
 # Check the type of value
 summary(data_1)
-
 ```
 
+# 2. Data Transformation
 
 ```{r}
 # Delete the second row of data
@@ -48,14 +48,8 @@ data_1 <- data_1 |>
 # Transform the Extent column to numbers
 data_1$Extent <- as.numeric(as.character(data_1$Extent))
 
-
-# Create a date column
-tidy_data <- data_1 |>
-  mutate(Date = paste(Year, Month, Day, sep = "-")) |>
-  select(Date, Extent, Missing)
-
 # Check the tidy_data
-tibble(tidy_data)
+tibble(data_1)
 ```
 以年或月为单位求Extent的最低值和平均值
 
