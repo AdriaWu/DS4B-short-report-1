@@ -51,7 +51,7 @@ data_2 |>
 ```
 This means that all rows of these columns have valid data, with no missing values. 
 
-## 3.2. Check for duplicates
+## 3.2. Check for duplicates 好像没太必要
 
 ```{r}
 # use the `duplicated()` function to identify and count duplicate rows.
@@ -227,7 +227,7 @@ model <- nls(cumulative_species ~ K / (1 + ((K - N0) / N0) * exp(-r * as.numeric
              # Print details of each step in the fitting process
              trace = TRUE)
 
-# Extract the estimated K (carrying capacity) which represents the total number of species.
+# Extract the estimated K (carrying capacity) which represents the total number of species. 解释ceof
 K_estimate <- coef(model)["K"]
 
 # Print the estimated number of species and rounding up estimates to make it easier to read.
@@ -239,7 +239,7 @@ This is evident as the sum of squared residuals decreased from an initial `1.504
 
 - K (carrying capacity) = 195.7334
 
-- N0 (initial species count) = 81.10501
+- N~0 (initial species count) = 81.10501
 
 - r (growth rate) = 0.007125516
 
@@ -249,7 +249,7 @@ Based on this model, the estimated total number of frog species in Australia is 
 # To visualize the fit and extrapolation
 data_sorted$predicted_species <- predict(model, newdata = data_sorted)
 
-plot_2 <- ggplot(data_sorted, aes(x = Date_Object)) +
+plot_3 <- ggplot(data_sorted, aes(x = Date_Object)) +
   geom_line(aes(y = cumulative_species, color = "Observed Data")) +
   geom_line(aes(y = predicted_species, color = "Logistic Fit")) +
   labs(title = "Species Discovery Curve with Logistic Fit",
@@ -258,7 +258,47 @@ plot_2 <- ggplot(data_sorted, aes(x = Date_Object)) +
   theme_minimal() +
   scale_color_manual(values = c("Observed Data" = "blue", "Logistic Fit" = "red"))
 
-print(plot_2)
+print(plot_3)
+
+```
+
+## 5.2. Chao1 Method
+
+The Chao1 estimator is a popular method to estimate species richness, especially when dealing with ecological data. 
+
+The formula for Chao1 is:
+
+$$
+Chao1 = S_{obs} + \frac{n_1(n_1 - 1)}{2(n_2 + 1)}
+$$
+
+Where:
+
+- $S_{obs}$ is the number of observed species.
+- $n_1$ is the number of species observed exactly once (singletons).
+- $n_2$ is the number of species observed exactly twice (doubletons).
+
+The intuition behind Chao1 is that the presence of many rare species (species observed only once or twice) suggests that there are likely many species that have not been observed at all.
+
+```{r}
+# Count the number of occurrences for each species
+species_counts <- table(data_2$scientificName)
+
+# Calculate the number of singletons and doubletons
+n_1 <- sum(species_counts == 1)
+n_2 <- sum(species_counts == 2)
+
+# Calculate Chao1 estimate
+S_obs <- length(unique(data_2$scientificName))
+Chao1 <- S_obs + (n_1 * (n_1 - 1)) / (2 * (n_2 + 1))
+
+# For 95% confidence intervals, we use the variance formula for Chao1:
+var_Chao1 <- S_obs + (n_1 * (n_1 - 1)) / (2 * (n_2 + 1))^2 * (2 * n_1 - 1) + n_1^2 / (n_2 + 1)
+lower_95 <- Chao1 - 1.96 * sqrt(var_Chao1)
+upper_95 <- Chao1 + 1.96 * sqrt(var_Chao1)
+
+print(paste("Chao1 estimate:", round(Chao1)))
+print(paste("95% CI: [", round(lower_95), ",", round(upper_95), "]"))
 
 ```
 
