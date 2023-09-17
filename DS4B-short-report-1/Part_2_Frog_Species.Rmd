@@ -18,7 +18,7 @@ output:
 
 https://github.com/AdriaWu/DS4B-short-report-1//blob/main/DS4B-short-report-1/Part_2_Frog_Species.Rmd
 
-## 1. Loading the data and preparing for the packages
+# 1. Loading the data
 
 ```{r}
 # Load necessary R packages
@@ -38,7 +38,7 @@ tibble(data_2)
 summary(data_2)
 ```
 
-## 2. Data Cleaning and Preliminary Analysis
+# 2. Data Cleaning and Preliminary Analysis
 
 The next step is to identify any anomalies, inconsistencies, or missing values.
 
@@ -80,7 +80,7 @@ print(state_distribution)
 ```
 We can know that the dataset has recorded a total of 199 unique species. The recordings span from the date 2017-11-10 to 2021-11-09. And with 229,000 recordings, NSW dominates the dataset, accounting for a significant portion of the total recordings.
 
-## 3. Plot the species discovery curve for Australia
+# 3. Plot the species discovery curve for Australia
 
 ### 3.1. Plot the species discovery curve for the whole of Australia
 
@@ -189,11 +189,11 @@ print(plot_2)
 
 This plot show separate trends for each state and territory, allowing for a comparison between them. We can find that here displays a consistent trend in the data. Over time, NSW and QLD have exhibited the most significant growth in the number of species discoveries. Concurrently, the growth trends in species discoveries for WA, VIC, and NT have been relatively consistent with each other. SA, TAS, and ACT have similarly shown comparable growth patterns, while other territories have remained stable with no evident increase in species discoveries.
 
-## 3. Estimation of True Number of Frog Species
+# 4. Estimation of True Number of Frog Species
 
 Now we need to estimate the true number of frog species in Australia in two ways. One is the extrapolation emthod, and another is the chang01 method.
 
-### 3.1. Extrapolation Method
+### 4.1. Extrapolation Method
 
 We can fit a curve (e.g., logistic growth curve) to the Australia-wide species discovery data. Extrapolate this curve to estimate when it levels off, indicating the potential total number of species.
 
