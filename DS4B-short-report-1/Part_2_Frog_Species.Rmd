@@ -63,13 +63,9 @@ unique_species <- length(unique(data_2$scientificName))
 
 # Get range of dates
 
-# First, the original date data is in character format, and we can just find the start date and end date.
+# The original date data is in character format, and we can just find the start date and end date.
 start_Date <- as.character(min(data_2$eventDate))
 end_Date <- as.character(max(data_2$eventDate))
-
-# Next, convert the `eventDate` column into standardized Date objects and create a new column to store them, ensuring consistency across the dataset and better visualization later.
-data_2$Date_Object <- as.Date(data_2$eventDate, format="%Y/%m/%d")
-date_range <- range(as.Date(data_2$Date_Object))
 
 # Distribution of recordings across states
 state_distribution <- table(data_2$stateProvince)
@@ -86,28 +82,70 @@ We can know that the dataset has recorded a total of 199 unique species. The rec
 
 ## 3. Plot the species discovery curve for Australia
 
+After a preliminary analysis of the data, we can plot the species discovery curve for Australia as a whole. This will show the cumulative number of species discovered over time.
+
 ```{r}
-# Convert the eventDate column to date format
-data_2$eventDate <- as.Date(data_2$eventDate, format="%Y/%m/%d")
+# Convert the `eventDate` column into standardized Date objects and create a new column to store them, ensuring consistency across the dataset and better visualization later.
+data_2$Date_Object <- as.Date(data_2$eventDate, format="%Y/%m/%d")
 
 # Sort the data by date
-data_sorted <- data_2 %>%
-  arrange(eventDate) %>%
-  group_by(eventDate) %>%
-  summarise(unique_species = n_distinct(scientificName)) %>%
+data_sorted <- data_2 |>
+  arrange(Date_Object) |>
+  group_by(Date_Object) |>
+  # Count the number of unique species on each date and then summarize them.
+  summarise(unique_species = n_distinct(scientificName)) |>
+  # Create a new column representing the cumulative number of species discovered so far, which includes the number of species on all previous dates.
   mutate(cumulative_species = cumsum(unique_species))
 
 # Use ggplot2 to plot the species discovery curve for Australia as whole
-plot_1 <- ggplot(data_sorted, aes(x = eventDate, y = cumulative_species)) +
-  geom_line(color = "blue") +
+plot_1 <- ggplot(data_sorted, aes(x = Date_Object, y = cumulative_species)) +
+  geom_line(color = "#2E86C1", linewidth = 1) +
+  
   labs(title = "Species Discovery Curve for Australia",
        x = "Date",
        y = "Cumulative Number of Species Discovered") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    panel.grid.minor = element_line(color = "gray90"),
+    panel.grid.major = element_line(color = "gray80")
+    ) 
+
+# Extract the first and last dates of the data_sorted 
+first_date <- data_sorted[1, ]
+last_date <- data_sorted[nrow(data_sorted), ]
+
+# Add points and date labels
+plot_1 <- plot_1 +
+  geom_point(data = first_date, aes(x = Date_Object, y = cumulative_species), color = "#E74C3C", size = 3) +
+  geom_point(data = last_date, aes(x = Date_Object, y = cumulative_species), color = "#E74C3C", size = 3) +
+  geom_text(data = first_date, 
+            aes(x = Date_Object, 
+                y = cumulative_species,
+                label = "2017-11-10"), 
+            vjust = -3, 
+            hjust = 0.25, 
+            size = 3, 
+            color = "#E74C3C") +
+  geom_text(data = last_date, 
+            aes(x = Date_Object, 
+                y = cumulative_species, 
+                label = "2021-11-09"), 
+            vjust = 1.5, 
+            hjust = 1.25, 
+            size = 3, 
+            color = "#E74C3C")
 
 print(plot_1)
 
 ```
+From plot_1, we can see that by the date 2021-11-09, the cumulative number of species discovered has already exceeded 45,000.
+
+
 ```{r}
 # Sort and group data by date and state
 data_sorted_statewise <- data_2 |>

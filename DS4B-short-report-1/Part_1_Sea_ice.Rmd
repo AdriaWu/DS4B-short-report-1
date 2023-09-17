@@ -18,7 +18,7 @@ output:
 
 https://github.com/AdriaWu/DS4B-short-report-1//blob/main/DS4B-short-report-1/Part_1_Sea_ice.Rmd
 
-## 1. Loading the data_1 and preparing for the packages
+## 1. Loading the data and preparing for the packages
 
 ```{r}
 # Load necessary R packages
