@@ -40,27 +40,36 @@ summary(data_2)
 
 ## 2. Data Cleaning and Preliminary Analysis
 
+The next step is to identify any anomalies, inconsistencies, or missing values.
+
 ```{r}
 # Check for missing values and use the `summarise_all()` to summarize or calculate all columns in a data frame
 data_2 |>
   summarise_all(~sum(is.na(.)))
 ```
-This means that all the rows in these columns have valid data, and there is no shortage.
+This means that all rows of these columns have valid data, with no missing values. Then let's check for duplicates.
 
 ```{r}
-# Check for Duplicates and use the `duplicated()` function to identify and count duplicate rows.
+# use the `duplicated()` function to identify and count duplicate rows.
 sum(duplicated(data_2))
 ```
-So there are no duplicate rows in the data_2.
+So there are no duplicate rows in the data_2. 
+
+Before diving into any analysis or visualization, we can make a summary of the dataset to provide a quick snapshot of key features for the data, which might help the readers who are unfamiliar with the dataset.
 
 ```{r}
-# Provide a summary of the dataset
-
 # Number of unique species
 unique_species <- length(unique(data_2$scientificName))
 
-# Range of dates
-date_range <- range(as.Date(data_2$eventDate, format="%Y/%m/%d"))
+# Get range of dates
+
+# First, the original date data is in character format, and we can just find the start date and end date.
+start_Date <- as.character(min(data_2$eventDate))
+end_Date <- as.character(max(data_2$eventDate))
+
+# Next, convert the `eventDate` column into standardized Date objects and create a new column to store them, ensuring consistency across the dataset and better visualization later.
+data_2$Date_Object <- as.Date(data_2$eventDate, format="%Y/%m/%d")
+date_range <- range(as.Date(data_2$Date_Object))
 
 # Distribution of recordings across states
 state_distribution <- table(data_2$stateProvince)
@@ -69,10 +78,11 @@ state_distribution <- table(data_2$stateProvince)
 cat("Summary of the Dataset:\n")
 cat("-----------------------\n")
 cat("Number of Unique Species Recorded:", unique_species, "\n")
-cat("Range of Dates: From", date_range[1], "to", date_range[2], "\n")
+cat("Range of Dates: From", start_Date, "to", end_Date, "\n")
 cat("Distribution of Recordings Across States:\n")
 print(state_distribution)
 ```
+We can know that the dataset has recorded a total of 199 unique species. The recordings span from the date 2017-11-10 to 2021-11-09. And with 229,000 recordings, NSW dominates the dataset, accounting for a significant portion of the total recordings.
 
 ## 3. Plot the species discovery curve for Australia
 
