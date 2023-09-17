@@ -14,11 +14,11 @@ output:
         fig_height: 4
 ---
 
-# Location on GitHub
+# **1. Location on GitHub**
 
 https://github.com/AdriaWu/DS4B-short-report-1//blob/main/DS4B-short-report-1/Part_1_Sea_ice.Rmd
 
-## 1. Loading the data and preparing for the packages
+# **2. Loading the data**
 
 ```{r}
 # Load necessary R packages
@@ -38,7 +38,7 @@ tibble(data_1)
 summary(data_1)
 ```
 
-## 2. Data Transformation
+# **3. Data Transformation**
 
 ```{r}
 # Delete the second row of data
@@ -53,7 +53,7 @@ data_1$Year <- as.numeric(as.character(data_1$Year))
 tibble(data_1)
 ```
 
-## 3. Filter data and evaluate by year or month
+# **4. Filter data and evaluate by year or month**
 
 ```{r}
 # Filter out the data for winter
@@ -109,7 +109,7 @@ print(final_df)
 
 ```
 
-## 4. Use ggplot to plot the time series
+# **5. Use ggplot to plot the time series**
 
 ```{r}
 # Emphasize the data for 2023 using points with different shape
@@ -143,7 +143,7 @@ plot_1 <- ggplot(final_df, aes(x = Year)) +
 plot_1
 ```
 
-## 5. Summary the data and plot
+# **6. Summary the data and plot**
 
 As we journey through the visual representation of Antarctic sea ice extent over the years, a few patterns emerge. Starting from the late 1970s, we observe fluctuations in the extent of sea ice during the winter months of June, July, and August. The solid lines represent the mean extent for each of these months, while the dashed lines depict the minimum and mean extent observed during the entire winter season.
 

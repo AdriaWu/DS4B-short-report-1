@@ -14,11 +14,11 @@ output:
         fig_height: 4
 ---
 
-# Location on GitHub
+# **1. Location on GitHub**
 
 https://github.com/AdriaWu/DS4B-short-report-1//blob/main/DS4B-short-report-1/Part_2_Frog_Species.Rmd
 
-# 1. Loading the data
+# **2. Loading the data**
 
 ```{r}
 # Load necessary R packages
@@ -38,22 +38,28 @@ tibble(data_2)
 summary(data_2)
 ```
 
-# 2. Data Cleaning and Preliminary Analysis
+# **3. Data Cleaning and Preliminary Analysis**
 
 The next step is to identify any anomalies, inconsistencies, or missing values.
 
+## 3.1. Check for missing values
+
 ```{r}
-# Check for missing values and use the `summarise_all()` to summarize or calculate all columns in a data frame
+# Use the `summarise_all()` to summarize or calculate all columns in a data frame
 data_2 |>
   summarise_all(~sum(is.na(.)))
 ```
-This means that all rows of these columns have valid data, with no missing values. Then let's check for duplicates.
+This means that all rows of these columns have valid data, with no missing values. 
+
+## 3.2. Check for duplicates
 
 ```{r}
 # use the `duplicated()` function to identify and count duplicate rows.
 sum(duplicated(data_2))
 ```
-So there are no duplicate rows in the data_2. 
+So there are no duplicate rows in the data 2. 
+
+## 3.3. Provide a summary of the dataset
 
 Before diving into any analysis or visualization, we can make a summary of the dataset to provide a quick snapshot of key features for the data, which might help the readers who are unfamiliar with the dataset.
 
@@ -71,18 +77,19 @@ end_Date <- as.character(max(data_2$eventDate))
 state_distribution <- table(data_2$stateProvince)
 
 # Print the summary
-cat("Summary of the Dataset:\n")
-cat("-----------------------\n")
-cat("Number of Unique Species Recorded:", unique_species, "\n")
-cat("Range of Dates: From", start_Date, "to", end_Date, "\n")
-cat("Distribution of Recordings Across States:\n")
+cat("Summary of the Dataset:\n",
+    "-----------------------\n",
+    "Number of Unique Species Recorded:", unique_species, "\n",
+    "Range of Dates: From", start_Date, "to", end_Date, "\n",
+    "Distribution of Recordings Across States:\n"
+    )
 print(state_distribution)
 ```
 We can know that the dataset has recorded a total of 199 unique species. The recordings span from the date 2017-11-10 to 2021-11-09. And with 229,000 recordings, NSW dominates the dataset, accounting for a significant portion of the total recordings.
 
-# 3. Plot the species discovery curve for Australia
+# **4. Plot the species discovery curve for Australia**
 
-### 3.1. Plot the species discovery curve for the whole of Australia
+## 4.1. Plot the species discovery curve for the whole of Australia
 
 After a preliminary analysis of the data, we can plot the species discovery curve for Australia as a whole. This will show the cumulative number of species discovered over time.
 
@@ -93,11 +100,8 @@ data_2$Date_Object <- as.Date(data_2$eventDate, format="%Y/%m/%d")
 # Sort the data by date
 data_sorted <- data_2 |>
   arrange(Date_Object) |>
-  group_by(Date_Object) |>
-  # Count the number of unique species on each date and then summarize them.
-  summarise(unique_species = n_distinct(scientificName)) |>
-  # Create a new column representing the cumulative number of species discovered so far, which includes the number of species on all previous dates.
-  mutate(cumulative_species = cumsum(unique_species))
+  # Create a new column representing the cumulative number of species discovered so far, but does not include previously duplicated species.
+  mutate(cumulative_species = cumsum(!duplicated(scientificName)))
 
 # Use ggplot2 to plot the species discovery curve for Australia as whole
 plot_1 <- ggplot(data_sorted, aes(x = Date_Object, y = cumulative_species)) +
@@ -113,8 +117,6 @@ plot_1 <- ggplot(data_sorted, aes(x = Date_Object, y = cumulative_species)) +
     axis.title.y = element_text(size = 14, face = "bold"),
     axis.text.x = element_text(size = 12),
     axis.text.y = element_text(size = 12),
-    panel.grid.minor = element_line(color = "gray90"),
-    panel.grid.major = element_line(color = "gray80")
     ) 
 
 # Extract the first and last dates of the data_sorted 
@@ -145,9 +147,9 @@ plot_1 <- plot_1 +
 print(plot_1)
 
 ```
-From plot_1, we can see that by the date 2021-11-09, the cumulative number of species discovered has already exceeded 45,000.
+From plot 1, we can see that by the date 2021-11-09, the cumulative number of species discovered has already exceeded 45,000.
 
-### 3.2. Plot the data for each state and territory
+## 4.2. Plot the data for each state and territory
 
 Next, let's break down the data to show the same relationship for each state and territory. For the state-wise breakdown, use different colors or line types to represent each state on the same plot. This will allow for easy comparison and identification of states with higher species diversity or more active recording.
 
@@ -156,10 +158,8 @@ Next, let's break down the data to show the same relationship for each state and
 data_sorted_statewise <- data_2 |>
   arrange(Date_Object) |>
   # This line of code is different from the code in the plot_1
-  group_by(Date_Object, stateProvince) |>
-  summarise(unique_species = n_distinct(scientificName), .groups = "drop") |>
   group_by(stateProvince) |>
-  mutate(cumulative_species = cumsum(unique_species))
+  mutate(cumulative_species = cumsum(!duplicated(scientificName)))
 
 # Plot the species discovery curve for each state
 plot_2 <- ggplot(data_sorted_statewise, 
@@ -176,7 +176,7 @@ plot_2 <- ggplot(data_sorted_statewise,
   theme(
     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
     axis.title.x = element_text(size = 12, face = "bold"),
-    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 10, face = "bold"),
     axis.text.x = element_text(size = 10),
     axis.text.y = element_text(size = 10),
     legend.position = "bottom",
@@ -189,11 +189,11 @@ print(plot_2)
 
 This plot show separate trends for each state and territory, allowing for a comparison between them. We can find that here displays a consistent trend in the data. Over time, NSW and QLD have exhibited the most significant growth in the number of species discoveries. Concurrently, the growth trends in species discoveries for WA, VIC, and NT have been relatively consistent with each other. SA, TAS, and ACT have similarly shown comparable growth patterns, while other territories have remained stable with no evident increase in species discoveries.
 
-# 4. Estimation of True Number of Frog Species
+# **5. Estimation of True Number of Frog Species**
 
 Now we need to estimate the true number of frog species in Australia in two ways. One is the extrapolation emthod, and another is the chang01 method.
 
-### 4.1. Extrapolation Method
+## 5.1. Extrapolation Method
 
 We can fit a curve (e.g., logistic growth curve) to the Australia-wide species discovery data. Extrapolate this curve to estimate when it levels off, indicating the potential total number of species.
 
@@ -204,8 +204,61 @@ N(t) = \frac{K}{1 + \frac{K - N_0}{N_0} e^{-rt}}
 $$
 
 Where:
+
 - $N(t)$ is the number of species discovered up to time $t$.
+
 - $K$ is the carrying capacity, or the total number of species.
+
 - $r$ is the growth rate.
+
 - $N_0$ is the initial number of species at $t = 0$.
+
+We have sorted the data by date and has a cumulative count of species discovered up to each date before. Next, we can use the `nls()` function (nonlinear least square method) in R to fit the logistic growth curve to the data. Then use the fitted model to predict the total number of species.
+
+```{r}
+# Fit the logistic growth curve
+
+model <- nls(cumulative_species ~ K / (1 + ((K - N0) / N0) * exp(-r * as.numeric(Date_Object - min(Date_Object)))), 
+             data = data_sorted, 
+             # Provide initial estimates to begin the iterative process
+             start = list(K = max(data_sorted$cumulative_species) * 2, 
+                          N0 = data_sorted$cumulative_species[1], 
+                          r = 0.01),
+             # Print details of each step in the fitting process
+             trace = TRUE)
+
+# Extract the estimated K (carrying capacity) which represents the total number of species.
+K_estimate <- coef(model)["K"]
+
+# Print the estimated number of species and rounding up estimates to make it easier to read.
+print(paste("Estimated Total Number of Frog Species:", round(K_estimate)))
+```
+The output shows the iterative process of the nonlinear least squares (`nls`) method fitting the logistic growth curve. Each line represents an iteration, detailing the current sum of squared residuals (a measure of the discrepancy between the model and the data) and the estimated model parameters. Throughout the iterations, the model progressively optimized its parameter estimates. 
+
+This is evident as the sum of squared residuals decreased from an initial `1.504456e+10` to `1.281187e+07`, indicating a gradual improvement in the model's fit to the data. The final model parameter estimates were 
+
+- K (carrying capacity) = 195.7334
+
+- N0 (initial species count) = 81.10501
+
+- r (growth rate) = 0.007125516
+
+Based on this model, the estimated total number of frog species in Australia is **196**.
+
+```{r}
+# To visualize the fit and extrapolation
+data_sorted$predicted_species <- predict(model, newdata = data_sorted)
+
+plot_2 <- ggplot(data_sorted, aes(x = Date_Object)) +
+  geom_line(aes(y = cumulative_species, color = "Observed Data")) +
+  geom_line(aes(y = predicted_species, color = "Logistic Fit")) +
+  labs(title = "Species Discovery Curve with Logistic Fit",
+       x = "Date",
+       y = "Number of Species Discovered") +
+  theme_minimal() +
+  scale_color_manual(values = c("Observed Data" = "blue", "Logistic Fit" = "red"))
+
+print(plot_2)
+
+```
 
