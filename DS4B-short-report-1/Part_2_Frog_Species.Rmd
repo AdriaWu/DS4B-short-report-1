@@ -131,16 +131,16 @@ plot_1 <- plot_1 +
             aes(x = Date_Object, 
                 y = cumulative_species,
                 label = start_Date), 
-            vjust = -3, 
-            hjust = 0.25, 
+            vjust = -1, 
+            hjust = -0.2, 
             size = 3, 
             color = "#E74C3C") +
   geom_text(data = last_date, 
             aes(x = Date_Object, 
                 y = cumulative_species, 
                 label = end_Date), 
-            vjust = 1.5, 
-            hjust = 1.25, 
+            vjust = 2, 
+            hjust = 1, 
             size = 3, 
             color = "#E74C3C")
 
@@ -301,4 +301,31 @@ print(paste("Chao1 estimate:", round(Chao1)))
 print(paste("95% CI: [", round(lower_95), ",", round(upper_95), "]"))
 
 ```
+Using this method, we predict a total of 202 species. Furthermore, the 95% confidence interval ranges from 174 to 230. This means we are 95% confident that the true number of species lies within this range.
 
+# **6. Comparison with Best-Guess Number**
+
+Based on the above code and calculation, we get the following results:
+
+- The Extrapolation Method gave us an estimate of 196 species.
+- The Chao1 estimation method predicted 202 species.
+
+Both methods provided estimates that are lower than the best-guess number.
+
+**Discussion**
+
+We will discuss potential reasons for discrepancies between the estimates and the best-guess number. Factors like the inherent limitations of the estimation methods, sampling bias, the geographical distribution of recordings, and seasonality can be considered.
+
+1. **Inherent Limitations of Estimation Methods**:
+
+- *Extrapolation Method*: This method assumes that the rate of species discovery will continue in the same pattern as observed. However, as more species are discovered, the rate of new discoveries might slow down, leading to an underestimation.
+
+- *Chao1 Method*: This method heavily relies on the number of singletons and doubletons. If there's a high number of rarely observed species, the estimate might be skewed. Additionally, it assumes that species are randomly sampled, which might not be the case due to the reasons mentioned above.
+
+2. **Sampling Bias**: The data might not be uniformly sampled across all regions of Australia. Some areas might be over-represented, while others might be under-represented. This can lead to an underestimation of species diversity, especially if certain regions with unique species were not adequately sampled.
+
+3. **Geographical Distribution of Recordings**: If the recordings are predominantly from urban or easily accessible areas, many species from remote or less accessible regions might be missed. Australia's vast landscapes and diverse habitats can host a variety of species, some of which might not have been captured in the dataset.
+
+4. **Seasonality**: Frogs are often more vocal and active during certain seasons, especially the breeding season. If recordings were predominantly from off-peak seasons, some species might not have been detected.
+
+In conclusion, while both the Extrapolation and Chao1 methods provide valuable insights into species diversity, they have their limitations and assumptions. It's essential to consider these factors and the context of the data collection when interpreting the results. The best-guess number, derived from in-depth taxonomic and genetic studies, remains the most comprehensive estimate, but the other methods can offer quick insights when such detailed studies are not feasible.

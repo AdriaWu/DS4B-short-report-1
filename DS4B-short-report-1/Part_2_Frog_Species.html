@@ -1988,6 +1988,29 @@ observed exactly once (singletons).</li>
 <li><span class="math inline">\(n_2\)</span> is the number of species
 observed exactly twice (doubletons).</li>
 </ul>
+<p>The intuition behind Chao1 is that the presence of many rare species
+(species observed only once or twice) suggests that there are likely
+many species that have not been observed at all.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># Count the number of occurrences for each species</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>species_counts <span class="ot">&lt;-</span> <span class="fu">table</span>(data_2<span class="sc">$</span>scientificName)</span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="co"># Calculate the number of singletons and doubletons</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>n_1 <span class="ot">&lt;-</span> <span class="fu">sum</span>(species_counts <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>n_2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(species_counts <span class="sc">==</span> <span class="dv">2</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a><span class="co"># Calculate Chao1 estimate</span></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a>S_obs <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(data_2<span class="sc">$</span>scientificName))</span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a>Chao1 <span class="ot">&lt;-</span> S_obs <span class="sc">+</span> (n_1 <span class="sc">*</span> (n_1 <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> (n_2 <span class="sc">+</span> <span class="dv">1</span>))</span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a><span class="co"># For 95% confidence intervals, we use the variance formula for Chao1:</span></span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a>var_Chao1 <span class="ot">&lt;-</span> S_obs <span class="sc">+</span> (n_1 <span class="sc">*</span> (n_1 <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> (n_2 <span class="sc">+</span> <span class="dv">1</span>))<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> (<span class="dv">2</span> <span class="sc">*</span> n_1 <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> n_1<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (n_2 <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a>lower_95 <span class="ot">&lt;-</span> Chao1 <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(var_Chao1)</span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a>upper_95 <span class="ot">&lt;-</span> Chao1 <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(var_Chao1)</span>
+<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Chao1 estimate:&quot;</span>, <span class="fu">round</span>(Chao1)))</span></code></pre></div>
+<pre><code>## [1] &quot;Chao1 estimate: 202&quot;</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;95% CI: [&quot;</span>, <span class="fu">round</span>(lower_95), <span class="st">&quot;,&quot;</span>, <span class="fu">round</span>(upper_95), <span class="st">&quot;]&quot;</span>))</span></code></pre></div>
+<pre><code>## [1] &quot;95% CI: [ 174 , 230 ]&quot;</code></pre>
 </div>
 </div>
 
