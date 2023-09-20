@@ -142,6 +142,7 @@ plot_1 <- ggplot(final_df, aes(x = Year)) +
 
 plot_1
 ```
+使用facet_wrap
 
 # **6. Summary the data and plot**
 

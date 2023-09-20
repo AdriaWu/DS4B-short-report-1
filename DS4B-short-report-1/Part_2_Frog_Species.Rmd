@@ -124,7 +124,7 @@ first_date <- data_sorted[1, ]
 last_date <- data_sorted[nrow(data_sorted), ]
 
 # Add points and date labels
-plot_1 <- plot_1 +
+plot_1_1 <- plot_1 +
   geom_point(data = first_date, aes(x = Date_Object, y = cumulative_species), color = "#E74C3C", size = 3) +
   geom_point(data = last_date, aes(x = Date_Object, y = cumulative_species), color = "#E74C3C", size = 3) +
   geom_text(data = first_date, 
@@ -144,7 +144,7 @@ plot_1 <- plot_1 +
             size = 3, 
             color = "#E74C3C")
 
-print(plot_1)
+print(plot_1_1)
 
 ```
 From plot 1, we can see that by the date 2021-11-09, the cumulative number of species discovered has already exceeded 45,000.
@@ -302,6 +302,29 @@ print(paste("95% CI: [", round(lower_95), ",", round(upper_95), "]"))
 
 ```
 Using this method, we predict a total of 202 species. Furthermore, the 95% confidence interval ranges from 174 to 230. This means we are 95% confident that the true number of species lies within this range.
+
+## 5.3 Visualization on the species discovery curve
+
+Now we can visualize this on the species discovery curve for Australia, marking the estimates and the best-guess number.
+
+```{r}
+# We already have the plot_1 from the previous code
+
+# Add horizontal lines for the estimates and best-guess number
+plot_1_2 <- plot_1 +
+  geom_hline(yintercept = 196, color = "red", linetype = "dashed", linewidth = 0.5) +
+  geom_hline(yintercept = 202, color = "green", linetype = "dashed", linewidth = 0.5) +
+  geom_hline(yintercept = 246, color = "blue", linetype = "dashed", linewidth = 0.5) +
+  geom_text(aes(x = min(data_sorted$Date_Object), y = 196, label = "Extrapolation: 196"), 
+            hjust = -0.1, vjust = 1.5, color = "red", size = 3) +
+  geom_text(aes(x = min(data_sorted$Date_Object), y = 202, label = "Chao1: 202"), 
+            hjust = -0.1, vjust = -0.5, color = "green", size = 3) +
+  geom_text(aes(x = min(data_sorted$Date_Object), y = 246, label = "Best-Guess: 246"), 
+            hjust = -0.1, vjust = 1.5, color = "blue", size = 3)
+
+print(plot_1_2)
+
+```
 
 # **6. Comparison with Best-Guess Number**
 
