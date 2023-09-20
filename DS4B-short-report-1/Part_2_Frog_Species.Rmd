@@ -45,15 +45,16 @@ The next step is to identify any anomalies, inconsistencies, or missing values.
 ## 3.1. Check for missing values
 
 ```{r}
-# Use the `summarise_all()` to summarize or calculate all columns in a data frame
+# Use the `summarise_all()` to summarize or calculate all columns in a data frame (written by ChatGPT)
 data_2 |>
   summarise_all(~sum(is.na(.)))
 ```
+
 This means that all rows of these columns have valid data, with no missing values. 
 
 ## 3.2. Check for duplicates 
 
-We can check whether there is any repeated recording for `occurrenceID` as it is a unique identifier for each record.
+We can check whether there is any repeated recording for `occurrenceID` as it is a unique identifier for each record (Rowley, J. J, 2020)
 
 ```{r}
 # use the `duplicated()` function to identify and count duplicate rows.
@@ -102,19 +103,19 @@ cat("Summary of the Dataset:\n",
     )
 print(state_distribution)
 ```
-We can know that the dataset has recorded a total of 199 unique species. The recordings span from the date 2017-11-10 to 2021-11-09. And with 229,000 recordings, NSW dominates the dataset, accounting for a significant portion of the total recordings.
+We can know that the dataset has recorded a total of **199** unique species. The recordings span from the date 2017-11-10 to 2021-11-09. And with 229,000 recordings, NSW dominates the dataset, accounting for a significant portion of the total recordings.
 
 # **4. Plot the species discovery curve for Australia**
 
 ## 4.1. Plot the species discovery curve for the whole of Australia
 
-After a preliminary analysis of the data, we can show the cumulative number of species discovered over time for Australia as a whole. Since the data in the `evenDate` column is all characters, we need to transform it to Date format before ploting.
+After a preliminary analysis of the data, we can show the cumulative number of species discovered over time for Australia as a whole. Since the data in the `evenDate` column is all characters, we need to transform it to Date format before plotting.
 
 ```{r}
 # Convert into Date objects and create a new column to store them.
 data_2$Date_Object <- as.Date(data_2$eventDate, format="%Y/%m/%d")
 
-# Sort the data by date
+# Sort the data by date (written by ChatGPT)
 data_sorted <- data_2 |>
   arrange(Date_Object) |>
   # The `cumsum` function can help calculate the cumulative number of species discovered so far. But it can't include previously duplicated species.
@@ -164,6 +165,7 @@ plot_1 <- plot_1 +
 print(plot_1)
 
 ```
+
 From plot 1, we can see that by the date 2021-11-09, the cumulative number of species discovered was close to 200.
 
 ## 4.2. Plot the data for each state and territory
@@ -209,7 +211,7 @@ This plot shows separate trends for each state and territory. We can find that h
 
 # **5. Estimation of True Number of Frog Species**
 
-Now we need to estimate the true number of frog species in Australia in two ways. One is the extrapolation emthod, and another is the chang01 method.
+Now we need to estimate the true number of frog species in Australia in two ways. One is the extrapolation emthod, and another is the Chao1 method.
 
 ## 5.1. Extrapolation Method
 
@@ -231,10 +233,10 @@ Where:
 
 - $N_0$ is the initial number of species at $t = 0$.
 
-We have sorted the data by date and has a cumulative count of species discovered up to each date before. Next, the **ChatGwe can use the `nls()` function (nonlinear least square method) in R to fit the logistic growth curve to the data. Then use the fitted model to predict the total number of species.
+We have sorted the data by date and has a cumulative count of species discovered up to each date before. Next, the **ChatGPT** tells us that we can use the `nls()` function (nonlinear least square method) in R to fit the logistic growth curve to the data. Then use the fitted model to predict the total number of species.
 
 ```{r}
-# Fit the logistic growth curve
+# Fit the logistic growth curve (written by ChatGPT)
 
 model <- nls(cumulative_species ~ K / (1 + ((K - N0) / N0) * exp(-r * as.numeric(Date_Object - min(Date_Object)))), 
              data = data_sorted, 
@@ -244,7 +246,7 @@ model <- nls(cumulative_species ~ K / (1 + ((K - N0) / N0) * exp(-r * as.numeric
                           r = 0.01)
              )
 
-# Extract the estimated K (carrying capacity) which represents the total number of species. 解释ceof
+# Extract the estimated K (carrying capacity) which represents the total number of species (written by ChatGPT).
 K_estimate <- coef(model)["K"]
 
 # Print the estimated number of species and rounding up estimates to make it easier to read.
@@ -280,8 +282,9 @@ n_2 <- sum(species_counts == 2)
 S_obs <- length(unique(data_2$scientificName))
 Chao1 <- S_obs + (n_1 * (n_1 - 1)) / (2 * (n_2 + 1))
 
-# For 95% confidence intervals, we use the variance formula for Chao1:
+# For 95% confidence intervals, we use the variance formula for Chao1 (written by ChatGPT):
 var_Chao1 <- S_obs + (n_1 * (n_1 - 1)) / (2 * (n_2 + 1))^2 * (2 * n_1 - 1) + n_1^2 / (n_2 + 1)
+# Use the standard normal distribution method to calculate the 95% confidence interval. Here 1.96 is the Z-score of the normal distribution, corresponding to the 95% confidence interval (written by ChatGPT).
 lower_95 <- Chao1 - 1.96 * sqrt(var_Chao1)
 upper_95 <- Chao1 + 1.96 * sqrt(var_Chao1)
 
@@ -296,7 +299,7 @@ Using this method, we predict a total of **202** species. Furthermore, the 95% c
 Now we can visualize this on the species discovery curve for Australia, marking the estimates and the best-guess number.
 
 ```{r}
-# We already have the plot_1 from the previous code
+# We already have the plot 1 from the previous code
 
 # To visualize the fit and extrapolation
 data_sorted$predicted_species <- predict(model, newdata = data_sorted)
@@ -320,9 +323,9 @@ plot_3 <- ggplot(data_sorted, aes(x = Date_Object)) +
 
 # Add horizontal lines for the estimates and best-guess number
 plot_3 <- plot_3 +
-  geom_hline(yintercept = 196, color = "purple", linetype = "dashed", linewidth = 0.75) +
-  geom_hline(yintercept = 202, color = "darkgreen", linetype = "dashed", linewidth = 0.75) +
-  geom_hline(yintercept = 246, color = "red", linetype = "dashed", linewidth = 0.75) +
+  geom_hline(yintercept = 196, color = "purple", linetype = "dashed") +
+  geom_hline(yintercept = 202, color = "darkgreen", linetype = "dashed") +
+  geom_hline(yintercept = 246, color = "red", linetype = "dashed") +
   geom_text(aes(x = min(data_sorted$Date_Object), y = 196, label = "Extrapolation: 196"), 
             hjust = -0.1, vjust = 1.5, color = "purple", size = 3) +
   geom_text(aes(x = min(data_sorted$Date_Object), y = 202, label = "Chao1: 202"), 
@@ -361,7 +364,7 @@ We will discuss potential reasons for discrepancies between the estimates and th
 
 In conclusion, while both the Extrapolation and Chao1 methods provide valuable insights into species diversity, they have their limitations and assumptions. It's essential to consider these factors and the context of the data collection when interpreting the results. The best-guess number, derived from in-depth taxonomic and genetic studies, remains the most comprehensive estimate, but the other methods can offer quick insights when such detailed studies are not feasible.
 
-# References
+# **References*
 
 OpenAI. (2023). ChatGPT (Version 4.0). OpenAI. https://www.openai.com/
 

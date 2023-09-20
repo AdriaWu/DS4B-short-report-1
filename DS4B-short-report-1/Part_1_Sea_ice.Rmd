@@ -1,5 +1,5 @@
 ---
-title: "Part_1_Sea_ice"
+title: "DS4B - Part 1 Sea ice"
 author: "Heyue WU_u7628175"
 date: "15/09/2023"
 output:  
@@ -56,10 +56,11 @@ tibble(data_1)
 # **4. Filter data and evaluate by year or month**
 
 ```{r}
-# Filter out the data for winter
+# Filter data from data_1 for the months of June, July and August, which represent the winter months
 winter_data <- data_1 |>
   filter(Month %in% c(6, 7, 8))
 
+# # Filter the data for June, July and August from winter_data, group them by year, and then calculate the average range for that month of each year
 Jun_df<- winter_data |>
   filter(Month == 6) |>
   group_by(Year) |>
@@ -112,9 +113,10 @@ print(final_df)
 # **5. Use ggplot to plot the time series**
 
 ```{r}
-# Emphasize the data for 2023 using points with different shape
 plot_1 <- ggplot(final_df, aes(x = Year)) +
+  # # Lines for each month's mean extent
   geom_line(aes(y = Mean_Jun_Extent, color = "Mean_Jun_Extent")) +
+  # Emphasize the data for 2023 using points with different shape (written by ChatGPT)
   geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_Jun_Extent), color = "green", size = 3, shape = 16) +
   
   geom_line(aes(y = Mean_July_Extent, color = "Mean_July_Extent")) +
@@ -123,6 +125,7 @@ plot_1 <- ggplot(final_df, aes(x = Year)) +
   geom_line(aes(y = Mean_Aug_Extent, color = "Mean_Aug_Extent")) +
   geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_Aug_Extent), color = "red", size = 3, shape = 16) +
   
+# Dashed lines for winter's min and mean extent
   geom_line(aes(y = Min_Winter_Extent, color = "Min_Winter_Extent"), linetype = "dashed") +
   geom_point(data = subset(final_df, Year == 2023), aes(y = Min_Winter_Extent), color = "purple", size = 3, shape = 18) +
   
@@ -132,17 +135,17 @@ plot_1 <- ggplot(final_df, aes(x = Year)) +
   labs(title = "Antarctic Sea Ice Extent Over the Years",
        subtitle = "Highlighting Winter 2023",
        y = "Extent (10^6 sq km)",
-       color = "Legend") +
+       color = "Measurements") +
   scale_x_continuous(breaks = seq(min(final_df$Year), max(final_df$Year), by = 2)) +
   theme_minimal() +
   # Rotate x-axis label 90 degrees and center the title and subtitle
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         plot.title = element_text(hjust = 0.5, size = 16),
-        plot.subtitle = element_text(hjust = 0.5, size = 14))
+        plot.subtitle = element_text(hjust = 0.5, size = 14),
+        )
 
 plot_1
 ```
-使用facet_wrap
 
 # **6. Summary the data and plot**
 
@@ -153,6 +156,10 @@ The 1980s saw a relatively stable pattern, with minor dips and rises. Moving int
 However, what stands out most prominently is the data for the recent years. The year 2023, in particular, showcases a sharp decline in the extent of sea ice, reaching its lowest in the recorded history. This decline is not just a one-off event but seems to be part of a trend observed since 2019.
 
 Such patterns raise crucial questions about the changing climate and its impact on Antarctic sea ice. While the reasons for these changes can be multifaceted, the visualization underscores the importance of continuous monitoring and research in understanding our planet's evolving climate dynamics.
+
+# **References*
+
+OpenAI. (2023). ChatGPT (Version 4.0). OpenAI. https://www.openai.com/
 
 
 
