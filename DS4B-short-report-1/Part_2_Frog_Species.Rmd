@@ -1,5 +1,5 @@
 ---
-title: "Part_2_Frog_Species"
+title: "DS4B - Part 2 Frog Species"
 author: "Heyue WU_u7628175"
 date: "15/09/2023"
 output:  
@@ -51,15 +51,32 @@ data_2 |>
 ```
 This means that all rows of these columns have valid data, with no missing values. 
 
-## 3.2. Check for duplicates 好像没太必要
+## 3.2. Check for duplicates 
+
+We can check whether there is any repeated recording for `occurrenceID` as it is a unique identifier for each record.
 
 ```{r}
 # use the `duplicated()` function to identify and count duplicate rows.
-sum(duplicated(data_2))
+duplicates_by_occurrenceID <- sum(duplicated(data_2$occurrenceID))
+duplicates_by_occurrenceID
 ```
-So there are no duplicate rows in the data 2. 
+Okay. There are no duplicate `occurrenceID` so maybe we can trust that there are no duplicate records.
 
-## 3.3. Provide a summary of the dataset
+## 3.3. Check for Inconsistencies
+
+```{r}
+# Check the 'basisOfRecord' column
+inconsistent_basisOfRecord <- sum(data_2$basisOfRecord != "Occurrence")
+
+# Check whether all rows are recorded by adult and male frogs
+non_adult_male_rows <- sum(data_2[!(data_2$sex == "male" & data_2$lifestage == "adult"), ])
+
+inconsistent_basisOfRecord
+non_adult_male_rows
+```
+Thus, all records are consistently marked as 'Occurrence' and only adult male frogs are recorded in the data.
+
+## 3.4. Provide a summary of the dataset
 
 Before diving into any analysis or visualization, we can make a summary of the dataset to provide a quick snapshot of key features for the data, which might help the readers who are unfamiliar with the dataset.
 
@@ -245,23 +262,6 @@ This is evident as the sum of squared residuals decreased from an initial `1.504
 
 Based on this model, the estimated total number of frog species in Australia is **196**.
 
-```{r}
-# To visualize the fit and extrapolation
-data_sorted$predicted_species <- predict(model, newdata = data_sorted)
-
-plot_3 <- ggplot(data_sorted, aes(x = Date_Object)) +
-  geom_line(aes(y = cumulative_species, color = "Observed Data")) +
-  geom_line(aes(y = predicted_species, color = "Logistic Fit")) +
-  labs(title = "Species Discovery Curve with Logistic Fit",
-       x = "Date",
-       y = "Number of Species Discovered") +
-  theme_minimal() +
-  scale_color_manual(values = c("Observed Data" = "blue", "Logistic Fit" = "red"))
-
-print(plot_3)
-
-```
-
 ## 5.2. Chao1 Method
 
 The Chao1 estimator is a popular method to estimate species richness, especially when dealing with ecological data. 
@@ -310,19 +310,41 @@ Now we can visualize this on the species discovery curve for Australia, marking 
 ```{r}
 # We already have the plot_1 from the previous code
 
+# To visualize the fit and extrapolation
+data_sorted$predicted_species <- predict(model, newdata = data_sorted)
+
+plot_3 <- ggplot(data_sorted, aes(x = Date_Object)) +
+  geom_line(aes(y = cumulative_species, color = "Observed Data")) +
+  geom_line(aes(y = predicted_species, color = "Logistic Fit")) +
+  labs(title = "Species Discovery Curve with Logistic Fit",
+       x = "Date",
+       y = "Number of Species Discovered") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10),
+    legend.position = "bottom",
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95")
+  ) +
+  scale_color_manual(values = c("Observed Data" = "#1f77b4", "Logistic Fit" = "#d62728"))
+
 # Add horizontal lines for the estimates and best-guess number
-plot_1_2 <- plot_1 +
-  geom_hline(yintercept = 196, color = "red", linetype = "dashed", linewidth = 0.5) +
-  geom_hline(yintercept = 202, color = "green", linetype = "dashed", linewidth = 0.5) +
-  geom_hline(yintercept = 246, color = "blue", linetype = "dashed", linewidth = 0.5) +
+plot_3 <- plot_3 +
+  geom_hline(yintercept = 196, color = "brown", linetype = "dashed", linewidth = 1) +
+  geom_hline(yintercept = 202, color = "green", linetype = "dashed", linewidth = 1) +
+  geom_hline(yintercept = 246, color = "blue", linetype = "dashed", linewidth = 1) +
   geom_text(aes(x = min(data_sorted$Date_Object), y = 196, label = "Extrapolation: 196"), 
-            hjust = -0.1, vjust = 1.5, color = "red", size = 3) +
+            hjust = -0.1, vjust = 1.5, color = "brown", size = 3) +
   geom_text(aes(x = min(data_sorted$Date_Object), y = 202, label = "Chao1: 202"), 
             hjust = -0.1, vjust = -0.5, color = "green", size = 3) +
   geom_text(aes(x = min(data_sorted$Date_Object), y = 246, label = "Best-Guess: 246"), 
             hjust = -0.1, vjust = 1.5, color = "blue", size = 3)
 
-print(plot_1_2)
+print(plot_3)
 
 ```
 
