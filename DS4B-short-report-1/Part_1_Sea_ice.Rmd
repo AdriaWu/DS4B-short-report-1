@@ -157,7 +157,7 @@ However, what stands out most prominently is the data for the recent years. The 
 
 Such patterns raise crucial questions about the changing climate and its impact on Antarctic sea ice. While the reasons for these changes can be multifaceted, the visualization underscores the importance of continuous monitoring and research in understanding our planet's evolving climate dynamics.
 
-# **References*
+# **References**
 
 OpenAI. (2023). ChatGPT (Version 4.0). OpenAI. https://www.openai.com/
 

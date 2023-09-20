@@ -364,7 +364,7 @@ We will discuss potential reasons for discrepancies between the estimates and th
 
 In conclusion, while both the Extrapolation and Chao1 methods provide valuable insights into species diversity, they have their limitations and assumptions. It's essential to consider these factors and the context of the data collection when interpreting the results. The best-guess number, derived from in-depth taxonomic and genetic studies, remains the most comprehensive estimate, but the other methods can offer quick insights when such detailed studies are not feasible.
 
-# **References*
+# **References**
 
 OpenAI. (2023). ChatGPT (Version 4.0). OpenAI. https://www.openai.com/
 
