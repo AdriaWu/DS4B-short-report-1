@@ -60,7 +60,7 @@ tibble(data_1)
 winter_data <- data_1 |>
   filter(Month %in% c(6, 7, 8))
 
-# # Filter the data for June, July and August from winter_data, group them by year, and then calculate the average range for that month of each year
+# Filter the data for June, July and August from winter_data, group them by year, and then calculate the average range for that month of each year
 Jun_df<- winter_data |>
   filter(Month == 6) |>
   group_by(Year) |>
@@ -114,11 +114,12 @@ print(final_df)
 
 ```{r}
 plot_1 <- ggplot(final_df, aes(x = Year)) +
-  # # Lines for each month's mean extent
+  # Lines for June mean extent
   geom_line(aes(y = Mean_Jun_Extent, color = "Mean_Jun_Extent")) +
   # Emphasize the data for 2023 using points with different shape (written by ChatGPT)
   geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_Jun_Extent), color = "green", size = 3, shape = 16) +
   
+  # Lines for June mean extent
   geom_line(aes(y = Mean_July_Extent, color = "Mean_July_Extent")) +
   geom_point(data = subset(final_df, Year == 2023), aes(y = Mean_July_Extent), color = "grey", size = 3, shape = 16) +
   
@@ -160,6 +161,8 @@ Such patterns raise crucial questions about the changing climate and its impact 
 # **References**
 
 OpenAI. (2023). ChatGPT (Version 4.0). OpenAI. https://www.openai.com/
+
+Sea lce Index (Version 3.0). https://nsidc.org/sites/default/files/g02135-v003-userguide_1_1.pdf
 
 
 
