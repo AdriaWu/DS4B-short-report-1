@@ -115,10 +115,10 @@ After a preliminary analysis of the data, we can show the cumulative number of s
 # Convert into Date objects and create a new column to store them.
 data_2$Date_Object <- as.Date(data_2$eventDate, format="%Y/%m/%d")
 
-# Sort the data by date (written by ChatGPT)
+# Sort the data by date 
 data_sorted <- data_2 |>
   arrange(Date_Object) |>
-  # The `cumsum` function can help calculate the cumulative number of species discovered so far. But it can't include previously duplicated species.
+  # Calculate the cumulative number of species discovered so far. But it can't include previously duplicated species (written by ChatGPT).
   mutate(cumulative_species = cumsum(!duplicated(scientificName)))
 
 # Plot the species discovery curve for Australia as whole
@@ -282,7 +282,7 @@ n_2 <- sum(species_counts == 2)
 S_obs <- length(unique(data_2$scientificName))
 Chao1 <- S_obs + (n_1 * (n_1 - 1)) / (2 * (n_2 + 1))
 
-# For 95% confidence intervals, we use the variance formula for Chao1 (written by ChatGPT):
+# For 95% confidence intervals, we use the variance formula for Chao1 
 var_Chao1 <- S_obs + (n_1 * (n_1 - 1)) / (2 * (n_2 + 1))^2 * (2 * n_1 - 1) + n_1^2 / (n_2 + 1)
 # Use the standard normal distribution method to calculate the 95% confidence interval. Here 1.96 is the Z-score of the normal distribution, corresponding to the 95% confidence interval (written by ChatGPT).
 lower_95 <- Chao1 - 1.96 * sqrt(var_Chao1)
@@ -299,8 +299,6 @@ Using this method, we predict a total of **202** species. Furthermore, the 95% c
 Now we can visualize this on the species discovery curve for Australia, marking the estimates and the best-guess number.
 
 ```{r}
-# We already have the plot 1 from the previous code
-
 # To visualize the fit and extrapolation
 data_sorted$predicted_species <- predict(model, newdata = data_sorted)
 
@@ -320,6 +318,17 @@ plot_3 <- ggplot(data_sorted, aes(x = Date_Object)) +
     legend.position = "bottom",
   ) +
   scale_color_manual(values = c("Observed Data" = "blue", "Logistic Fit" = "darkred"))
+
+# Visualize the 95% confidence interval ranges for Chao1 method
+
+# Add upper and lower confidence intervals
+data_sorted$lower_95 <- lower_95
+data_sorted$upper_95 <- upper_95
+
+# Add filling of confidence intervals (written by ChatGPT)
+plot_3 <- plot_3 +
+  geom_ribbon(aes(ymin = lower_95, ymax = upper_95, fill = "95% Confidence Interval"), alpha = 0.5) +
+  scale_fill_manual(values = c("95% Confidence Interval" = "grey"))
 
 # Add horizontal lines for the estimates and best-guess number
 plot_3 <- plot_3 +
@@ -352,19 +361,25 @@ We will discuss potential reasons for discrepancies between the estimates and th
 
 1. **Inherent Limitations of Estimation Methods**:
 
-- *Extrapolation Method*: This method assumes that the rate of species discovery will continue in the same pattern as observed. However, as more species are discovered, the rate of new discoveries might slow down, leading to an underestimation.
+- *Extrapolation Method*: This method assumes that the rate of species discovery will continue in the same pattern as observed. However, as more species are discovered, the rate of new discoveries might slow down, leading to an underestimation (Carneiro, L., 2016).
 
-- *Chao1 Method*: This method heavily relies on the number of singletons and doubletons. If there's a high number of rarely observed species, the estimate might be skewed. Additionally, it assumes that species are randomly sampled, which might not be the case due to the reasons mentioned above.
+- *Chao1 Method*: This method heavily relies on the number of singletons and doubletons. If there's a high number of rarely observed species, the estimate might be skewed. Additionally, it assumes that species are randomly sampled, which might not be the case due to the reasons mentioned above (Béguinot, J., 2015).
 
 2. **Sampling Bias**: The data might not be uniformly sampled across all regions of Australia. Some areas might be over-represented, while others might be under-represented. This can lead to an underestimation of species diversity, especially if certain regions with unique species were not adequately sampled.
 
-3. **Geographical Distribution of Recordings**: If the recordings are predominantly from urban or easily accessible areas, many species from remote or less accessible regions might be missed. Australia's vast landscapes and diverse habitats can host a variety of species, some of which might not have been captured in the dataset.
+3. **Geographical Distribution of Recordings**: If the recordings are predominantly from urban or easily accessible areas, many species from remote or less accessible regions might be missed. Australia's vast landscapes and diverse habitats can host a variety of species, some of which might not have been captured in the dataset（Amboni, M.P. & Laffan, S.W., 2012).
 
 4. **Seasonality**: Frogs are often more vocal and active during certain seasons, especially the breeding season. If recordings were predominantly from off-peak seasons, some species might not have been detected.
 
 In conclusion, while both the Extrapolation and Chao1 methods provide valuable insights into species diversity, they have their limitations and assumptions. It's essential to consider these factors and the context of the data collection when interpreting the results. The best-guess number, derived from in-depth taxonomic and genetic studies, remains the most comprehensive estimate, but the other methods can offer quick insights when such detailed studies are not feasible.
 
 # **References**
+
+Amboni, M.P., & Laffan, S.W. (2012). The effect of species geographical distribution estimation methods on richness and phylogenetic diversity estimates. *International Journal of Geographical Information Science*, 26, 2097 - 2109.
+
+Béguinot, J. (2015). Extrapolation of the Species Accumulation Curve for Incomplete Species Samplings: A New Nonparametric Approach to Estimate the Degree of Sample Completeness and Decide when to Stop Sampling. *Annual research & review in biology*, 8, 1-9.
+
+Carneiro, L., Lima, A.P., Machado, R.B., & Magnusson, W.E. (2016). Limitations to the Use of Species-Distribution Models for Environmental-Impact Assessments in the Amazon. *PLoS ONE*, 11.
 
 OpenAI. (2023). ChatGPT (Version 4.0). OpenAI. https://www.openai.com/
 
@@ -373,6 +388,7 @@ Rowley, J. J., Callaghan, C. T., Cutajar, T., Portway, C., Potter, K., Mahony, S
 Rowley, J. J. L., & Callaghan, C. T. (2020). The FrogID dataset: expert-validated occurrence records of Australia's frogs collected by citizen scientists. *ZooKeys*, 912, 139–151. https://doi.org/10.3897/zookeys.912.38253
 
 Wikipedia contributors. (2023, September 5). Logistic function. In Wikipedia, *The Free Encyclopedia*. Retrieved 10:50, September 20, 2023, from https://en.wikipedia.org/w/index.php?title=Logistic_function&oldid=1173943856
+
 
 
 
