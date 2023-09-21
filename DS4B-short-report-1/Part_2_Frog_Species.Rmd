@@ -326,11 +326,11 @@ plot_3 <- plot_3 +
   geom_hline(yintercept = 196, color = "purple", linetype = "dashed") +
   geom_hline(yintercept = 202, color = "darkgreen", linetype = "dashed") +
   geom_hline(yintercept = 246, color = "red", linetype = "dashed") +
-  geom_text(aes(x = min(data_sorted$Date_Object), y = 196, label = "Extrapolation: 196"), 
+  geom_text(aes(x = min(Date_Object), y = 196, label = "Extrapolation: 196"), 
             hjust = -0.1, vjust = 1.5, color = "purple", size = 3) +
-  geom_text(aes(x = min(data_sorted$Date_Object), y = 202, label = "Chao1: 202"), 
+  geom_text(aes(x = min(Date_Object), y = 202, label = "Chao1: 202"), 
             hjust = -0.1, vjust = -0.5, color = "darkgreen", size = 3) +
-  geom_text(aes(x = min(data_sorted$Date_Object), y = 246, label = "Best-Guess: 246"), 
+  geom_text(aes(x = min(Date_Object), y = 246, label = "Best-Guess: 246"), 
             hjust = -0.1, vjust = 1.5, color = "red", size = 3)
 
 print(plot_3)
